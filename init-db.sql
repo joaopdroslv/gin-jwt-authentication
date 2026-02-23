@@ -36,7 +36,7 @@ INSERT INTO main.user_statuses (
 
 SET @active_user_status_id := (SELECT id FROM main.user_statuses WHERE name = "active" LIMIT 1);
 
-CREATE TABLE IF NOT EXISTS user_credentials (
+CREATE TABLE IF NOT EXISTS credentials (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email           VARCHAR(128) UNIQUE NOT NULL,
     password_hash   VARCHAR(255) DEFAULT NULL,
@@ -53,14 +53,14 @@ CREATE TABLE IF NOT EXISTS users (
     created_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_user_user_credential FOREIGN KEY (user_credential_id) REFERENCES main.user_credentials(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_user_credential FOREIGN KEY (user_credential_id) REFERENCES main.credentials(id) ON DELETE CASCADE,
     CONSTRAINT fk_user_user_status FOREIGN KEY (user_status_id) REFERENCES main.user_statuses(id),
 
     UNIQUE KEY uk_user_user_credential (user_credential_id),
     INDEX idx_user_with_status (id, user_status_id)
 );
 
-INSERT INTO main.user_credentials (
+INSERT INTO main.credentials (
     email,
     password_hash
 ) VALUES
@@ -70,7 +70,7 @@ INSERT INTO main.user_credentials (
     )
 ;
 
-SET @system_user_credential_id := (SELECT id FROM main.user_credentials WHERE email = "system@system.com" LIMIT 1);
+SET @system_user_credential_id := (SELECT id FROM main.credentials WHERE email = "system@system.com" LIMIT 1);
 
 INSERT INTO main.users (
     name,
