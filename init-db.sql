@@ -21,11 +21,11 @@ INSERT INTO main.user_statuses (
         "A inactive user cannot perform any action."
     ),
     (
-        "email_confirmation",
+        "email_confirmation_pending",
         "When a user's account is awaiting the email confirmation, it's not considered active yet."
     ),
     (
-        "password_creation",
+        "password_creation_pending",
         "When a user's account is awaiting the creation of the password, it's not considered active yet."
     ),
     (

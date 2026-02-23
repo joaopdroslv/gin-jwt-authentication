@@ -3,7 +3,8 @@ package auth
 import "time"
 
 type UserInfo struct {
-	ID int64
+	ID           int64
+	UserStatusID int64
 }
 
 type Credential struct {

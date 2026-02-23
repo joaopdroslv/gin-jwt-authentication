@@ -34,6 +34,12 @@ func (h *AuthHandler) LoginUser(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 			return
 		}
+
+		if errs.IsUserStatusRelated(err) {
+			c.JSON(http.StatusForbidden, gin.H{"message": err.Error()})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
 		return
 	}

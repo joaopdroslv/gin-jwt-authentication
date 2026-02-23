@@ -2,9 +2,12 @@ package auth
 
 import (
 	"context"
+	authdomain "gin-jwt-authentication/internal/auth/domain"
 	authrepository "gin-jwt-authentication/internal/auth/repository"
 	authschemas "gin-jwt-authentication/internal/auth/schemas"
+	"gin-jwt-authentication/internal/enums"
 	"gin-jwt-authentication/internal/errs"
+	"log"
 	"strconv"
 	"time"
 
@@ -34,6 +37,13 @@ func (s *AuthService) LoginUser(ctx context.Context, body authschemas.LoginBody)
 		return "", errs.ErrInvalidCredentials
 	}
 
+	log.Println(user)
+
+	err = s.validateUserStatus(user)
+	if err != nil {
+		return "", err
+	}
+
 	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password)) != nil {
 		return "", errs.ErrInvalidCredentials
 	}
@@ -46,4 +56,20 @@ func (s *AuthService) LoginUser(ctx context.Context, body authschemas.LoginBody)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(s.jwtSecret)
+}
+
+func (s *AuthService) validateUserStatus(user *authdomain.Credential) error {
+
+	switch user.UserInfo.UserStatusID {
+	case int64(enums.Inactive):
+		return errs.ErrInactiveUser
+	case int64(enums.EmailConfirmationPending):
+		return errs.ErrUserEmailConfirmationPending
+	case int64(enums.PasswordCreationPending):
+		return errs.ErrUserPasswordCreationPending
+	case int64(enums.Deleted):
+		return errs.ErrDeletedUser
+	}
+
+	return nil
 }

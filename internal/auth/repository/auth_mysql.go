@@ -24,7 +24,8 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 			credentials.password_hash,
 			credentials.created_at,
 			credentials.updated_at,
-			users.id
+			users.id,
+			users.user_status_id
 		FROM main.credentials
 		JOIN main.users ON users.user_credential_id = credentials.id
 		WHERE credentials.email = ?
@@ -39,6 +40,7 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 		&credential.CreatedAt,
 		&credential.UpdatedAt,
 		&credential.UserInfo.ID,
+		&credential.UserInfo.UserStatusID,
 	); err != nil {
 		return nil, err
 	}
