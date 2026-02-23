@@ -2,12 +2,11 @@ package auth
 
 import (
 	"context"
-	authdomain "gin-jwt-authentication/internal/auth/domain"
+	authmodels "gin-jwt-authentication/internal/auth/models"
 	authrepository "gin-jwt-authentication/internal/auth/repository"
 	authschemas "gin-jwt-authentication/internal/auth/schemas"
 	"gin-jwt-authentication/internal/enums"
 	"gin-jwt-authentication/internal/errs"
-	"log"
 	"strconv"
 	"time"
 
@@ -30,14 +29,32 @@ func NewAuthService(authRepository authrepository.AuthRepository, jwtSecret stri
 	}
 }
 
+func (s *AuthService) RegisterUser(ctx context.Context, body authschemas.RegisterBody) error {
+
+	birthdate, err := time.Parse("2006-01-02", body.Birthdate)
+	if err != nil {
+		return err
+	}
+
+	passwordHash, _ := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
+
+	registrationData := &authmodels.RegistrationData{
+		UserStatusID: int64(enums.Active), // Maybe email confirmation
+		Name:         body.Name,
+		Birthdate:    birthdate,
+		Email:        body.Email,
+		PasswordHash: string(passwordHash),
+	}
+
+	return s.authRepository.RegisterUser(ctx, registrationData)
+}
+
 func (s *AuthService) LoginUser(ctx context.Context, body authschemas.LoginBody) (string, error) {
 
 	user, err := s.authRepository.GetUserByEmail(ctx, body.Email)
 	if err != nil {
 		return "", errs.ErrInvalidCredentials
 	}
-
-	log.Println(user)
 
 	err = s.validateUserStatus(user)
 	if err != nil {
@@ -58,7 +75,7 @@ func (s *AuthService) LoginUser(ctx context.Context, body authschemas.LoginBody)
 	return token.SignedString(s.jwtSecret)
 }
 
-func (s *AuthService) validateUserStatus(user *authdomain.Credential) error {
+func (s *AuthService) validateUserStatus(user *authmodels.Credential) error {
 
 	switch user.UserInfo.UserStatusID {
 	case int64(enums.Inactive):

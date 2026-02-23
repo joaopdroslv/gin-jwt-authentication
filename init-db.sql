@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_user_user_credential FOREIGN KEY (user_credential_id) REFERENCES main.credentials(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_user_credential FOREIGN KEY (user_credential_id) REFERENCES main.credentials(id),
     CONSTRAINT fk_user_user_status FOREIGN KEY (user_status_id) REFERENCES main.user_statuses(id),
 
     UNIQUE KEY uk_user_user_credential (user_credential_id),

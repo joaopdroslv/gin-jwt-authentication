@@ -2,9 +2,10 @@ package auth
 
 import (
 	"context"
-	authdomain "gin-jwt-authentication/internal/auth/domain"
+	authmodels "gin-jwt-authentication/internal/auth/models"
 )
 
 type AuthRepository interface {
-	GetUserByEmail(ctx context.Context, email string) (*authdomain.Credential, error)
+	GetUserByEmail(ctx context.Context, email string) (*authmodels.Credential, error)
+	RegisterUser(ctx context.Context, user *authmodels.RegistrationData) error
 }

@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"database/sql"
-	authdomain "gin-jwt-authentication/internal/auth/domain"
+	authmodels "gin-jwt-authentication/internal/auth/models"
 )
 
 type AuthRepositoryMysql struct {
@@ -15,7 +15,7 @@ func NewAuthRepositoryMysql(db *sql.DB) *AuthRepositoryMysql {
 	return &AuthRepositoryMysql{db: db}
 }
 
-func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) (*authdomain.Credential, error) {
+func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) (*authmodels.Credential, error) {
 
 	row := r.db.QueryRowContext(ctx, `
 		SELECT
@@ -31,7 +31,7 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 		WHERE credentials.email = ?
 	`, email)
 
-	var credential authdomain.Credential
+	var credential authmodels.Credential
 
 	if err := row.Scan(
 		&credential.ID,
@@ -46,4 +46,53 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 	}
 
 	return &credential, nil
+}
+
+func (r *AuthRepositoryMysql) RegisterUser(ctx context.Context, registrationData *authmodels.RegistrationData) error {
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	res, err := tx.ExecContext(
+		ctx,
+		`INSERT INTO main.credentials (email, password_hash) VALUES (?, ?)`,
+		registrationData.Email,
+		registrationData.PasswordHash,
+	)
+	if err != nil {
+		return err
+	}
+
+	credentialID, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	res, err = tx.ExecContext(
+		ctx,
+		`
+		INSERT INTO main.users (
+			user_credential_id,
+			user_status_id,
+			name,
+			birthdate
+		) VALUES (?, ?, ? ,?)
+		`,
+		credentialID,
+		registrationData.UserStatusID,
+		registrationData.Name,
+		registrationData.Birthdate,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -5,6 +5,7 @@ import (
 	authschemas "gin-jwt-authentication/internal/auth/schemas"
 	authservice "gin-jwt-authentication/internal/auth/service"
 	"gin-jwt-authentication/internal/errs"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,25 @@ type AuthHandler struct {
 func NewAuthHandler(authService *authservice.AuthService) *AuthHandler {
 
 	return &AuthHandler{authService: authService}
+}
+
+func (h *AuthHandler) RegisterUser(c *gin.Context) {
+
+	var body authschemas.RegisterBody
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid request body"})
+		return
+	}
+
+	err := h.authService.RegisterUser(c, body)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "user registered successfully"})
 }
 
 func (h *AuthHandler) LoginUser(c *gin.Context) {
