@@ -1,0 +1,17 @@
+root = "."
+tmp_dir = "/tmp/air"
+
+[build]
+cmd = "go build -o /tmp/air/api ./cmd/api"
+bin = "/tmp/air/api"
+include_ext = ["go"]
+exclude_dir = ["vendor"]
+exclude_unchanged = true
+poll = true
+
+[log]
+time = true
+main_only = false
+
+[screen]
+clear_on_rebuild = true

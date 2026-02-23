@@ -1,0 +1,23 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+# Handling dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copying all codebase
+COPY . .
+
+# Building the binary, using the cmd/api
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api ./cmd/api
+
+# Final image
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /app
+COPY --from=builder /app/api /app/api
+
+EXPOSE 8080
+
+CMD ["/app/api"]
