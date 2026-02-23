@@ -21,7 +21,9 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 		SELECT
 			credentials.id,
 			credentials.email,
-			credentials.password_hash
+			credentials.password_hash,
+			credentials.created_at,
+			credentials.updated_at
 		FROM main.credentials
 		WHERE credentials.email = ?
 	`, email)
