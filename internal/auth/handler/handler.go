@@ -5,7 +5,6 @@ import (
 	authschemas "gin-jwt-authentication/internal/auth/schemas"
 	authservice "gin-jwt-authentication/internal/auth/service"
 	"gin-jwt-authentication/internal/errs"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +30,11 @@ func (h *AuthHandler) RegisterUser(c *gin.Context) {
 
 	err := h.authService.RegisterUser(c, body)
 	if err != nil {
-		log.Println(err)
+		if errors.Is(err, errs.ErrResourceAlreadyExists) {
+			c.JSON(http.StatusConflict, gin.H{"message": "this email address is already in use"})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, something went wrong"})
 		return
 	}

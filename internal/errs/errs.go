@@ -5,6 +5,8 @@ import "errors"
 var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 
+	ErrResourceAlreadyExists = errors.New("this resource already exists")
+
 	ErrInactiveUser                 = errors.New("inactive user, cannot login")
 	ErrUserEmailConfirmationPending = errors.New("email confirmation is pending, do it before loggin in")
 	ErrUserPasswordCreationPending  = errors.New("password creation is pending, do it before loggin in")
