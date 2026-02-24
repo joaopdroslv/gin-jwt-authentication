@@ -32,11 +32,11 @@ func (h *AuthHandler) RegisterUser(c *gin.Context) {
 	err := h.authService.RegisterUser(c, body)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, something went wrong"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "user registered successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "registered successfully"})
 }
 
 func (h *AuthHandler) LoginUser(c *gin.Context) {
@@ -60,7 +60,7 @@ func (h *AuthHandler) LoginUser(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "sorry, something went wrong"})
 		return
 	}
 
