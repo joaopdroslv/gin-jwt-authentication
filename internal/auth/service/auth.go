@@ -48,7 +48,7 @@ func (s *AuthService) RegisterUser(ctx context.Context, body authschemas.Registe
 
 	passwordHash, _ := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
 
-	registrationData := &authdto.RegistrationData{
+	data := &authdto.RegisterUserData{
 		UserStatusID: int64(enums.Active),
 		Name:         body.Name,
 		Birthdate:    birthdate,
@@ -56,7 +56,7 @@ func (s *AuthService) RegisterUser(ctx context.Context, body authschemas.Registe
 		PasswordHash: string(passwordHash),
 	}
 
-	return s.authRepository.RegisterUser(ctx, registrationData)
+	return s.authRepository.RegisterUser(ctx, data)
 }
 
 func (s *AuthService) LoginUser(ctx context.Context, body authschemas.LoginBody) (string, error) {

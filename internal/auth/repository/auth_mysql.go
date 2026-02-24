@@ -52,10 +52,7 @@ func (r *AuthRepositoryMysql) GetUserByEmail(
 	return &credential, nil
 }
 
-func (r *AuthRepositoryMysql) RegisterUser(
-	ctx context.Context,
-	registrationData *authdto.RegistrationData,
-) error {
+func (r *AuthRepositoryMysql) RegisterUser(ctx context.Context, data *authdto.RegisterUserData) error {
 
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -66,8 +63,8 @@ func (r *AuthRepositoryMysql) RegisterUser(
 	res, err := tx.ExecContext(
 		ctx,
 		`INSERT INTO main.credentials (email, password_hash) VALUES (?, ?)`,
-		registrationData.Email,
-		registrationData.PasswordHash,
+		data.Email,
+		data.PasswordHash,
 	)
 	if err != nil {
 		return err
@@ -89,9 +86,9 @@ func (r *AuthRepositoryMysql) RegisterUser(
 		) VALUES (?, ?, ? ,?)
 		`,
 		credentialID,
-		registrationData.UserStatusID,
-		registrationData.Name,
-		registrationData.Birthdate,
+		data.UserStatusID,
+		data.Name,
+		data.Birthdate,
 	)
 	if err != nil {
 		return err

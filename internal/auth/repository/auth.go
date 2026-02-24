@@ -8,5 +8,5 @@ import (
 
 type AuthRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*authmodels.Credential, error)
-	RegisterUser(ctx context.Context, user *authdto.RegistrationData) error
+	RegisterUser(ctx context.Context, data *authdto.RegisterUserData) error
 }
