@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"database/sql"
+	authdto "gin-jwt-authentication/internal/auth/dto"
 	authmodels "gin-jwt-authentication/internal/auth/models"
 )
 
@@ -15,7 +16,10 @@ func NewAuthRepositoryMysql(db *sql.DB) *AuthRepositoryMysql {
 	return &AuthRepositoryMysql{db: db}
 }
 
-func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) (*authmodels.Credential, error) {
+func (r *AuthRepositoryMysql) GetUserByEmail(
+	ctx context.Context,
+	email string,
+) (*authmodels.Credential, error) {
 
 	row := r.db.QueryRowContext(ctx, `
 		SELECT
@@ -48,7 +52,10 @@ func (r *AuthRepositoryMysql) GetUserByEmail(ctx context.Context, email string) 
 	return &credential, nil
 }
 
-func (r *AuthRepositoryMysql) RegisterUser(ctx context.Context, registrationData *authmodels.RegistrationData) error {
+func (r *AuthRepositoryMysql) RegisterUser(
+	ctx context.Context,
+	registrationData *authdto.RegistrationData,
+) error {
 
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {

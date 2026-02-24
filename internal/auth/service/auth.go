@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	authdto "gin-jwt-authentication/internal/auth/dto"
 	authmodels "gin-jwt-authentication/internal/auth/models"
 	authrepository "gin-jwt-authentication/internal/auth/repository"
 	authschemas "gin-jwt-authentication/internal/auth/schemas"
@@ -20,7 +21,11 @@ type AuthService struct {
 	jwtTTL         time.Duration
 }
 
-func NewAuthService(authRepository authrepository.AuthRepository, jwtSecret string, jwtTTL int64) *AuthService {
+func NewAuthService(
+	authRepository authrepository.AuthRepository,
+	jwtSecret string,
+	jwtTTL int64,
+) *AuthService {
 
 	return &AuthService{
 		authRepository: authRepository,
@@ -38,8 +43,8 @@ func (s *AuthService) RegisterUser(ctx context.Context, body authschemas.Registe
 
 	passwordHash, _ := bcrypt.GenerateFromPassword([]byte(body.Password), 12)
 
-	registrationData := &authmodels.RegistrationData{
-		UserStatusID: int64(enums.Active), // Maybe email confirmation
+	registrationData := &authdto.RegistrationData{
+		UserStatusID: int64(enums.Active),
 		Name:         body.Name,
 		Birthdate:    birthdate,
 		Email:        body.Email,
