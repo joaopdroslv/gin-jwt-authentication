@@ -6,7 +6,7 @@ import (
 	authrepository "gin-jwt-authentication/internal/auth/repository"
 	authservice "gin-jwt-authentication/internal/auth/service"
 	"gin-jwt-authentication/internal/config"
-	"gin-jwt-authentication/internal/database"
+	"gin-jwt-authentication/internal/infra"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ func main() {
 
 	env := config.NewEnv()
 
-	db, err := database.NewMysql(env.DockerDatabaseURL)
+	db, err := infra.NewMysqlDatabase(env.DockerDatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
